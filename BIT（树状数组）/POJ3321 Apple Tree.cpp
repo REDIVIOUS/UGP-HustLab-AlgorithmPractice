@@ -1,13 +1,14 @@
-#include <iostream>
+#include <cstdio>
 #include <vector>
 #define lowbit(x) ((x)&(-x)) 
-#define N 100000
-using namespace std;
+#define N 100010
+using namespace std; 
 
-int in[N],out[N]; // 
+int in[N],out[N]; //入序号和出序号 
 int c[N],flag[N];  //树状数组和，是否有苹果标志 
 vector<int> mylist[N]; //邻接表 
 int count; 
+
 //树状数组的getsum函数：返回前x个整数的和
 int getsum(int x){
 	int sum=0;
@@ -33,13 +34,14 @@ void DFS(int x){
 		DFS(mylist[x][i]); 
 	}
 	out[x]=count;
-} 
+}
+ 
 int main(){
 	int n;
-	cin>>n;
+	scanf("%d",&n);
 	int u,v;
 	for(int i=1;i<=n-1;i++){
-		cin>>u>>v;
+		scanf("%d %d",&u,&v);
 		mylist[u].push_back(v); //边的连接关系输入邻接表 
 	}
 	count=1;
@@ -49,13 +51,13 @@ int main(){
 		update(i,1); //树状数组每一个节点加1 
 	} 
 	int m;
-	cin>>m;
+	char type;
+	int num;
+	scanf("%d",&m);
 	for(int i=0;i<m;i++){
-		char type;
-		int num;
-		cin>>type>>num;
+		scanf("%s %d",&type,&num);
 		if(type=='Q'){ //如果是查询，则输出个数 
-			cout<<getsum(out[num])-getsum(in[num]-1)<<endl;
+			printf("%d\n",getsum(out[num])-getsum(in[num]-1));
 		}
 		else if(type=='C'){ //如果是更改，则调用update更改 
 			if(flag[num]==1){ //如果该树上有苹果 

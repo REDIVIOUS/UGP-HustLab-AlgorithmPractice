@@ -11,7 +11,7 @@ using namespace std;
 //通过以上分析有，回答yes两者为同类 
 int root[N]; //并查集数组 
 int relation[N]; //关系数组，0为同类，1不为同类 
-int dp[N][N];
+int dp[N][N]; //背包容量为j时前i件物品的价值 
 int setnum[N]; //每个根节点集合的个数 
 int weight[2][N]; //动态规划weight数组（0代表同类，1代表不同类） 
 int index[N]; //只记录根节点的索引 
@@ -23,11 +23,12 @@ int findroot(int v){
 		return v;
 	}
 	else{
-		//向上寻找根节点时，更新关系 
-		relation[v]=(relation[v]+relation[root[v]]+2)%2; 
 		//更新根节点 
+		int u=root[v];
 		root[v]=findroot(root[v]); //递归查找
-		return root[v]; 		
+		//向上寻找根节点时，更新关系 
+		relation[v]=(relation[v]+relation[u])%2; 
+		return root[v]; //返回根节点 		
 	} 
 }
 
@@ -41,16 +42,16 @@ void unionroot(int x, int y, int d){
 	//没有合并则合并
 	root[rooty]=rootx; //向rootx合并
 	relation[rooty]=(relation[x]-relation[y]+2+d)%2;
-	setnum[rootx]=setnum[rootx]+setnum[rooty];
+	setnum[rootx]=setnum[rootx]+setnum[rooty]; //rootx接管rooty下的元数个数 
 	setnum[rooty]=0; 
 }
 
 void KNAP(int block,int p,int tt){
-	dp[0][0]=1;
-	for(int i=1;i<=block;i++){ //完成动态规划表 
-		for(int j=0;j<=p;j++){
+	dp[0][0]=1; //背包边界，和0号同类的有1个 
+	for(int i=1;i<=block;i++){ //物品一共有block个 
+		for(int j=0;j<=p;j++){ //价值最大允许装入为p，即天使的数量 
 			if(j>=weight[0][i]){
-				dp[i][j]+=dp[i-1][j-weight[0][i]];
+				dp[i][j]=dp[i-1][j-weight[0][i]];
 			}
 			if(j>=weight[1][i]){
 				dp[i][j]+=dp[i-1][j-weight[1][i]];
@@ -89,7 +90,7 @@ int main(){
         memset(dp,0,sizeof(dp));
         memset(index,0,sizeof(index));
         memset(pre,0,sizeof(pre));
-		tt=p1+p2;
+		tt=p1+p2;  //动物总个数 
 		for(int i=1;i<=tt;i++){
 			root[i]=i; //初始化并查集
 			relation[i]=0; //初始化关系数组
@@ -113,9 +114,12 @@ int main(){
 			}
 		}
 		for(int i=1;i<=tt;i++){
-//			findroot(i);
-			weight[relation[i]][index[root[i]]]+=1; //对应块背包重量加一 
+			findroot(i);
+			//对应块背包重量加一
+			//只有根节点对应的序号有价值，分别记录其下和根节点同类、不同类的数量  
+			weight[relation[i]][index[root[i]]]+=1;
 		}
+		//进入背包查询的过程 
 		KNAP(block,p1,tt);
 	}
 	return 0; 	
