@@ -1,2 +1,2 @@
-# Algorithm_practice
-HUST 算法实践
+# UGP-HustLab-AlgorithmPractice
+[undergraduate coursework in hust] Lab of Algorithm practice course. (experiment course)
